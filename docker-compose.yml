@@ -1,0 +1,28 @@
+version: "3"
+services:
+  frontend:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "4181:4181"
+    volumes:
+      - ./:/app
+    depends_on:
+      - node_server
+
+  node_server:
+    build:
+      context: ./node_server
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    depends_on:
+      - fluree
+
+  fluree:
+    image: fluree/http-api-gateway:latest
+    ports:
+      - "58090:8090"
+    volumes:
+      - "./data:/opt/fluree-http-api-gateway/data"

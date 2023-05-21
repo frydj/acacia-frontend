@@ -1,0 +1,8 @@
+#viewport {
+    min-height: 100vh;
+    min-width: 100vw;
+    max-height: 100vh;
+    max-width: 100vw;
+    overflow: auto;
+    background: linear-gradient(to bottom right, rgba(220,230,240,1), white, rgba(240,230,220,1));
+}
