@@ -1,7 +1,9 @@
 import React from 'react';
 import './Container.css';
+import { useStyles } from './ContainerStyles';
 
-const Container = ({ lay, className, children, inline = false }) => {
+const Container = ({ lay, className, id, children, inline = false }) => {
+  const { classes } = useStyles();
   let x, y;
 
   if (lay?.d === 'col') {
@@ -20,7 +22,12 @@ const Container = ({ lay, className, children, inline = false }) => {
   let str = arr.join(' ');
 
   return (
-    <div className={`${inline ? 'inline-flex' : 'flex'} ${str} ${className}`}>
+    <div
+      id={id}
+      className={`${inline ? 'inline-flex' : 'flex'} ${str} ${className} ${
+        classes.container
+      }`}
+    >
       {children}
     </div>
   );

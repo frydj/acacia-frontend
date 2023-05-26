@@ -1,12 +1,10 @@
 .flex {
     display: flex;
-    outline: 1px solid rgba(30,100,170,0.4);
     flex-wrap: wrap;
 }
 
 .inline-flex {
     display: inline-flex;
-    outline: 1px solid rgba(30,100,170,0.4);
     flex-wrap: wrap;
 }
 
@@ -68,4 +66,8 @@
 
 .d-col {
     flex-direction: column;
+}
+
+.d-row {
+    flex-direction: row;
 }

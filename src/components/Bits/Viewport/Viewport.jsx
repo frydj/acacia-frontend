@@ -1,12 +1,13 @@
 import React from 'react';
-import './Viewport.css';
+import { useStyles } from './ViewportStyles';
 
-const Viewport = ({children}) => {
-    return (
-        <div id="viewport">
-            {children}
-        </div>
-    )
-}
+const Viewport = ({ children }) => {
+  const { classes } = useStyles();
+  return (
+    <div id="viewport" className={classes.viewport}>
+      {children}
+    </div>
+  );
+};
 
 export default Viewport;

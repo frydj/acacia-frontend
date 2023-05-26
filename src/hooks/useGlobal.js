@@ -3,6 +3,9 @@ import React, { createContext, useContext, useReducer } from 'react';
 const initialState = {
   theme: 'dark',
   input: [],
+  open: false,
+  bannerHeight: 35,
+  drawerWidth: 200,
 };
 
 const GlobalContext = createContext();

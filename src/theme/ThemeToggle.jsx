@@ -5,9 +5,7 @@ import { DarkMode } from '@mui/icons-material';
 
 const ThemeToggle = ({ onClick, theme }) => {
   const buttonTitle =
-    theme.palette.type === 'dark'
-      ? 'View App in Light Mode'
-      : 'View App in Dark Mode';
+    theme.palette.type === 'dark' ? 'Light Mode' : 'Dark Mode';
 
   return (
     <IconButton
@@ -15,6 +13,7 @@ const ThemeToggle = ({ onClick, theme }) => {
       title={buttonTitle}
       color="inherit"
       onClick={onClick}
+      size="small"
     >
       {theme.palette.type === 'light' ? <LightMode /> : <DarkMode />}
     </IconButton>
