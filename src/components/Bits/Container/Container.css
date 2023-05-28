@@ -71,3 +71,7 @@
 .d-row {
     flex-direction: row;
 }
+
+textarea {
+    background-color: black;
+}

@@ -20,17 +20,14 @@ const Banner = () => {
   const theme = useTheme();
 
   const toggle = () => {
-    console.log('toggle was called');
     dispatch({ type: 'open', value: !open });
   };
 
   return (
     <Container lay={{ x: 'between', y: 'center' }} className={classes.banner}>
-      <span className={classes.mainTitle} id="acacia">
-        <IconButton size="small" onClick={toggle} color="inherit">
-          <Menu />
-        </IconButton>
-      </span>
+      <IconButton size="small" onClick={toggle} color="inherit">
+        <Menu />
+      </IconButton>
       <ThemeToggle onClick={theme.toggle} theme={theme} />
     </Container>
   );

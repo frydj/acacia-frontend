@@ -11,7 +11,6 @@ const Palette = ({ popped = false }) => {
   const c = [...c1, ...c2];
 
   const pop = () => {
-    console.log('pop!');
     window.open('/pop/palette', '_blank', 'height=10000,width=490');
   };
 

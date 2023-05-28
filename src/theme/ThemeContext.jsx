@@ -8,7 +8,8 @@ export const useTheme = () => React.useContext(ThemeToggleContext);
 const constants = createTheme({
   constants: {
     drawerWidth: 220,
-    bannerHeight: 46,
+    bannerHeight: 42,
+    toolbarHeight: 26,
   },
 });
 
@@ -21,6 +22,7 @@ const darkThemeBase = createTheme({
       background: 'black',
       text: 'snow',
       transition: '0.25s ease-in-out',
+      borderColor: blueGrey[900],
     },
     test: {
       background: blueGrey[900],
@@ -80,6 +82,7 @@ const lightThemeBase = createTheme({
       background: 'white',
       text: 'black',
       transition: '0.25s ease-in-out',
+      borderColor: blueGrey[200],
     },
     test: {
       background: blueGrey[300],

@@ -4,8 +4,9 @@ const initialState = {
   theme: 'dark',
   input: [],
   open: false,
-  bannerHeight: 35,
-  drawerWidth: 200,
+  toolbarVisible: true,
+  localStorageListener: false,
+  editorValuesKey: 'editorValues',
 };
 
 const GlobalContext = createContext();

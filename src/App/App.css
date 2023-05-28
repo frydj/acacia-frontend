@@ -1,4 +1,21 @@
 html {
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+body {
+    background-color: black
+}
+
+.no-select {
+    -webkit-user-select: none;
+    /* Safari */
+    -ms-user-select: none;
+    /* IE 10 and IE 11 */
+    user-select: none;
+    /* Standard syntax */
+}
+
+/* for monaco editor */ 
+.scrollbar .slider::before, .slider::after {
+    display: none !important;
+}

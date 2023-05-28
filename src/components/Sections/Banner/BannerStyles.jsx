@@ -13,9 +13,4 @@ export const useStyles = makeStyles()((theme) => ({
     bottom: 0,
     zIndex: 100,
   },
-  mainTitle: {
-    fontSize: '24px',
-    fontWeight: '500',
-    letterSpacing: '-0.5px',
-  },
 }));
