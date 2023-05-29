@@ -77,6 +77,14 @@ export const useStyles = makeStyles()((theme, { width }) => {
       top: '8px',
       zIndex: '89',
     },
+    bookend: {
+      backgroundColor: 'rgba(255,255,255,0)',
+      height: '16px',
+      width: '1px',
+      position: 'relative',
+      top: '8px',
+      zIndex: '89',
+    },
     tabContainer: {
       display: 'flex',
     },

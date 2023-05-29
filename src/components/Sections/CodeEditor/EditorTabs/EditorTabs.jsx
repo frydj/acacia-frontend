@@ -1,13 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import Container from '../../../Bits/Container/Container';
 import { useStyles } from './EditorTabsStyles';
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
-import useGlobal from '../../../../hooks/useGlobal';
 import { IconButton } from '@mui/material';
 import { Add as NewTab, Close as CloseTab } from '@mui/icons-material';
 
 const EditorTabs = ({
   width,
+  storageKey,
+  readOnly,
+  newTab,
   tabs,
   setTabs,
   tabIndex,
@@ -18,12 +20,8 @@ const EditorTabs = ({
   const { classes } = useStyles({ width });
   const { getValue, setValue } = useLocalStorage();
 
-  const {
-    state: { editorValuesKey },
-  } = useGlobal();
-
   useEffect(() => {
-    setTabs(JSON.parse(getValue(editorValuesKey)));
+    setTabs(JSON.parse(getValue(storageKey)));
   }, [tabIndex, refresh]);
 
   const setActive = (e, index) => {
@@ -39,42 +37,11 @@ const EditorTabs = ({
         tabs[i].active = false;
       }
     }
-    setValue(editorValuesKey, JSON.stringify(tabs));
-  };
-
-  const newTab = () => {
-    let existingTabs = JSON.parse(getValue(editorValuesKey));
-
-    // get name for new tab
-    let tabNames = existingTabs.map((tab) => tab.name);
-    let newName = '';
-    for (var i = 1; i <= tabNames.length + 1; i++) {
-      if (tabNames.indexOf(`tab${i}`) === -1) {
-        newName = `tab${i}`;
-        break;
-      }
-    }
-
-    // set all other tab to inactive
-    for (var i = 0; i < existingTabs.length; i++) {
-      existingTabs[i].active = false;
-    }
-
-    // new tab object
-    let newOne = {
-      name: newName,
-      value: '',
-      active: true,
-    };
-
-    // push the new tab & set local storage
-    existingTabs.push(newOne);
-    setValue(editorValuesKey, JSON.stringify(existingTabs));
-    setTabIndex(existingTabs.length - 1);
+    setValue(storageKey, JSON.stringify(tabs));
   };
 
   const closeTab = (index) => {
-    let existingTabs = JSON.parse(getValue(editorValuesKey));
+    let existingTabs = JSON.parse(getValue(storageKey));
     let activeTabIndex = existingTabs.map((tab) => tab.active);
     activeTabIndex = activeTabIndex.indexOf(true);
 
@@ -99,7 +66,7 @@ const EditorTabs = ({
       existingTabs.splice(index, 1);
     }
 
-    setValue(editorValuesKey, JSON.stringify(existingTabs));
+    setValue(storageKey, JSON.stringify(existingTabs));
     setTabIndex(activeTabIndex - 1);
     setRefresh(!refresh);
   };
@@ -126,21 +93,26 @@ const EditorTabs = ({
               }
             >
               {p.name}
-              <IconButton
-                size="small"
-                className={classes.closeTab}
-                onClick={() => closeTab(i)}
-              >
-                <CloseTab sx={{ fontSize: '11px' }} />
-              </IconButton>
+              {!readOnly && (
+                <IconButton
+                  size="small"
+                  className={classes.closeTab}
+                  onClick={() => closeTab(i)}
+                >
+                  <CloseTab sx={{ fontSize: '11px' }} />
+                </IconButton>
+              )}
             </span>
-            <span className={classes.separator}></span>
+            {!readOnly && <span className={classes.separator}></span>}
+            {readOnly && <span className={classes.bookend}></span>}
           </div>
         ))}
       </Container>
-      <IconButton size="small" className={classes.newTab} onClick={newTab}>
-        <NewTab sx={{ fontSize: '18px' }} />
-      </IconButton>
+      {!readOnly && (
+        <IconButton size="small" className={classes.newTab} onClick={newTab}>
+          <NewTab sx={{ fontSize: '18px' }} />
+        </IconButton>
+      )}
     </Container>
   );
 };

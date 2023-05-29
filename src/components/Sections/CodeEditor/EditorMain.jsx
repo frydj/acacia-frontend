@@ -5,51 +5,41 @@ import EditorToolbar from './EditorToolbar/EditorToolbar';
 import EditorTabs from './EditorTabs/EditorTabs';
 import { useLocalStorage } from '../../../hooks/useLocalStorage';
 import Container from '../../Bits/Container/Container';
-import useGlobal from '../../../hooks/useGlobal';
-
-const defaultValue = `{
-    "some": "value"
-}`;
-
-const key = 'editorValues';
 
 let defaultTheme = {};
 defineTheme('oceanic-next').then(
   (_) => (defaultTheme = { value: 'oceanic-next', label: 'Oceanic Next' })
 );
 
-const EditorMain = ({ width }) => {
-  const {
-    state: { editorValuesKey },
-  } = useGlobal();
+const EditorMain = ({ width, storageKey, readOnly = false }) => {
   const { getValue, setValue } = useLocalStorage();
-  const [code, setCode] = useState(defaultValue);
-  const [tabs, setTabs] = useState(JSON.parse(getValue(editorValuesKey)));
+  const [code, setCode] = useState('');
+  const [tabs, setTabs] = useState(JSON.parse(getValue(storageKey)));
   const [tabIndex, setTabIndex] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
   // create a blank tab if nothing stored in localstorage
   useEffect(() => {
-    if (!getValue(editorValuesKey)) {
+    if (!getValue(storageKey)) {
       const blankTab = [
         {
-          name: 'tab1',
+          name: readOnly ? 'Results' : 'tab1',
           value: '',
           active: true,
         },
       ];
-      setValue(editorValuesKey, JSON.stringify(blankTab));
+      setValue(storageKey, JSON.stringify(blankTab));
     }
   }, []);
 
   useEffect(() => {
-    const tabValues = JSON.parse(getValue(editorValuesKey));
+    const tabValues = JSON.parse(getValue(storageKey));
     const tabValue = tabValues.filter((tab) => tab.active)[0];
     setCode(tabValue.value);
   }, [tabIndex, refresh]);
 
   useEffect(() => {
-    let tabValues = JSON.parse(getValue(editorValuesKey));
+    let tabValues = JSON.parse(getValue(storageKey));
     tabValues = tabValues.map((tab) => tab.active);
     setTabIndex(tabValues.indexOf(true));
   }, []);
@@ -60,9 +50,9 @@ const EditorMain = ({ width }) => {
   const handleEditorChange = (value) => {
     console.log('handle editor change was called');
     setCode(value);
-    let storedItems = JSON.parse(getValue(editorValuesKey));
+    let storedItems = JSON.parse(getValue(storageKey));
     storedItems[tabIndex].value = value;
-    setValue(key, JSON.stringify(storedItems));
+    setValue(storageKey, JSON.stringify(storedItems));
   };
 
   useEffect(() => {
@@ -72,13 +62,47 @@ const EditorMain = ({ width }) => {
   }, [window.location]);
 
   useEffect(() => {
-    setTabs(JSON.parse(getValue(editorValuesKey)));
+    setTabs(JSON.parse(getValue(storageKey)));
   }, [code]);
+
+  const newTab = () => {
+    let existingTabs = JSON.parse(getValue(storageKey));
+
+    // get name for new tab
+    let tabNames = existingTabs.map((tab) => tab.name);
+    let newName = '';
+    for (var i = 1; i <= tabNames.length + 1; i++) {
+      if (tabNames.indexOf(`tab${i}`) === -1) {
+        newName = `tab${i}`;
+        break;
+      }
+    }
+
+    // set all other tab to inactive
+    for (var i = 0; i < existingTabs.length; i++) {
+      existingTabs[i].active = false;
+    }
+
+    // new tab object
+    let newOne = {
+      name: newName,
+      value: '',
+      active: true,
+    };
+
+    // push the new tab & set local storage
+    existingTabs.push(newOne);
+    setValue(storageKey, JSON.stringify(existingTabs));
+    setTabIndex(existingTabs.length - 1);
+  };
 
   return (
     <Container lay={{ x: 'start', y: 'start', d: 'col' }}>
       <EditorTabs
         width={width}
+        storageKey={storageKey}
+        readOnly={readOnly}
+        newTab={newTab}
         tabs={tabs}
         setTabs={setTabs}
         tabIndex={tabIndex}
@@ -88,6 +112,9 @@ const EditorMain = ({ width }) => {
       />
       <EditorToolbar
         width={width}
+        storageKey={storageKey}
+        readOnly={readOnly}
+        newTab={newTab}
         code={code}
         setCode={setCode}
         tabIndex={tabIndex}
@@ -99,7 +126,7 @@ const EditorMain = ({ width }) => {
         language={language || 'json'}
         value={code}
         theme={theme.value}
-        defaultValue="// some comment"
+        defaultValue=""
         onChange={handleEditorChange}
       />
     </Container>

@@ -6,7 +6,8 @@ const initialState = {
   open: false,
   toolbarVisible: true,
   localStorageListener: false,
-  editorValuesKey: 'editorValues',
+  flureeEditorKey: 'editorValues',
+  responseEditorKey: 'responseValues',
 };
 
 const GlobalContext = createContext();
