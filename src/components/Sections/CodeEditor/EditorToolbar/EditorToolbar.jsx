@@ -40,6 +40,7 @@ const EditorToolbar = ({
   };
 
   const query = () => {
+    // this is just a test change
     console.log('query!');
     let url = '/query';
     axios.post(url, JSON.parse(code)).then((res) => console.log(res.data));
