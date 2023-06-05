@@ -15,11 +15,31 @@ const EditorMain = ({ width, storageKey, readOnly = false }) => {
   const { getValue, setValue } = useLocalStorage();
   const [code, setCode] = useState('');
   const [tabs, setTabs] = useState(JSON.parse(getValue(storageKey)));
-  const [tabIndex, setTabIndex] = useState(false);
+  const [tabIndex, setTabIndex] = useState(
+    getValue(storageKey)
+      ? JSON.parse(getValue(storageKey))
+          .map((tab) => tab.active)
+          .indexOf(true)
+      : 0
+  );
   const [refresh, setRefresh] = useState(false);
 
-  // create a blank tab if nothing stored in localstorage
+  const getLocalStorage = () => {
+    console.log('getLocalStorage was called!');
+    let item = JSON.parse(getValue(storageKey));
+    let fuckstick = item[tabIndex];
+    console.log({ item });
+    console.log({ tabIndex });
+    console.log({ fuckstick });
+    setCode(fuckstick.value);
+  };
+
   useEffect(() => {
+    console.log(tabIndex);
+  }, [tabIndex]);
+
+  useEffect(() => {
+    // create a blank tab if nothing stored in localstorage
     if (!getValue(storageKey)) {
       const blankTab = [
         {
@@ -30,6 +50,23 @@ const EditorMain = ({ width, storageKey, readOnly = false }) => {
       ];
       setValue(storageKey, JSON.stringify(blankTab));
     }
+
+    // initial tab index
+    let tabValues = JSON.parse(getValue(storageKey));
+    tabValues = tabValues.map((tab) => tab.active);
+    console.log(tabValues.indexOf(true));
+    setTabIndex(tabValues.indexOf(true));
+
+    // listener for when localstorage changes
+    if (readOnly) {
+      console.log(`${storageKey} event listener added!`);
+      window.addEventListener('storage', getLocalStorage);
+    }
+    return () => {
+      if (readOnly) {
+        window.removeEventListener('storage', getLocalStorage);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -37,12 +74,6 @@ const EditorMain = ({ width, storageKey, readOnly = false }) => {
     const tabValue = tabValues.filter((tab) => tab.active)[0];
     setCode(tabValue.value);
   }, [tabIndex, refresh]);
-
-  useEffect(() => {
-    let tabValues = JSON.parse(getValue(storageKey));
-    tabValues = tabValues.map((tab) => tab.active);
-    setTabIndex(tabValues.indexOf(true));
-  }, []);
 
   const [theme, setTheme] = useState(defaultTheme);
   const [language, setLanguage] = useState('json');
@@ -120,15 +151,17 @@ const EditorMain = ({ width, storageKey, readOnly = false }) => {
         tabIndex={tabIndex}
         setTabIndex={setTabIndex}
       />
-      <Editor
-        height="70vh"
-        width={width}
-        language={language || 'json'}
-        value={code}
-        theme={theme.value}
-        defaultValue=""
-        onChange={handleEditorChange}
-      />
+      <div id="test-container" style={{ width: width }}>
+        <Editor
+          height="70vh"
+          width={'100%'}
+          language={language || 'json'}
+          value={code}
+          theme={theme.value}
+          defaultValue=""
+          onChange={handleEditorChange}
+        />
+      </div>
     </Container>
   );
 };

@@ -1,20 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Container from '../../../Bits/Container/Container';
 import { useStyles } from './EditorToolbarStyles';
 import {
+  AddBox as Create,
   AutoAwesome as Prettify,
-  ElectricBolt as Transact,
-  Search as Query,
-  Save,
-  FolderOpen as Open,
-  NoteAdd as New,
   ContentCopy as Copy,
   Download,
+  ElectricBolt as Transact,
+  FolderOpen as Open,
+  NoteAdd as New,
+  Save,
+  Search as Query,
 } from '@mui/icons-material';
 
 import { useLocalStorage } from '../../../../hooks/useLocalStorage';
 import EditorToolbarItem from './EditorToolbarItem';
 import axios from 'axios';
+import LedgerSelect from '../LedgerSelect/LedgerSelect';
+
+const circularReplacer = () => {
+  const seen = new WeakSet();
+  return (key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      if (seen.has(value)) {
+        return;
+      }
+      seen.add(value);
+    }
+    return value;
+  };
+};
 
 const EditorToolbar = ({
   width,
@@ -28,6 +43,7 @@ const EditorToolbar = ({
 }) => {
   const { classes } = useStyles({ width });
   const { getValue, setValue } = useLocalStorage();
+  const [ledger, setLedger] = useState(getValue('activeLedger') || '');
 
   const todo = (message) => {
     console.log(`TODO: ${message}`);
@@ -36,25 +52,77 @@ const EditorToolbar = ({
   const transact = () => {
     console.log('transact!');
     let url = '/transact';
-    axios.post(url, JSON.parse(code)).then((res) => console.log(res.data));
+
+    const requestBody = {
+      ledger: ledger,
+      txn: JSON.parse(code),
+    };
+
+    axios.post(url, requestBody).then((res) => {
+      console.log(res.data);
+      let resultBody = [
+        {
+          name: 'Results',
+          value: JSON.stringify(res.data, null, 2),
+          active: true,
+        },
+      ];
+      setValue('responseValues', JSON.stringify(resultBody, null, 2));
+      window.dispatchEvent(new Event('storage'));
+    });
   };
 
   const query = () => {
-    // this is just a test change
     console.log('query!');
     let url = '/query';
+
+    const requestBody = {
+      ledger: ledger,
+      query: JSON.parse(code),
+    };
+
+    console.log(requestBody);
+
+    axios
+      .post(url, requestBody)
+      .then((res) => {
+        console.log(res.data);
+        let resultBody = [
+          {
+            name: 'Results',
+            value: JSON.stringify(res.data, null, 2),
+            active: true,
+          },
+        ];
+        setValue('responseValues', JSON.stringify(resultBody, null, 2));
+        window.dispatchEvent(new Event('storage'));
+      })
+      .catch((e) => {
+        console.warn(e.response.data);
+        let resultBody = [
+          {
+            name: 'Results',
+            value: JSON.stringify(e.response.data, null, 2),
+            active: true,
+          },
+        ];
+        setValue('responseValues', JSON.stringify(resultBody, null, 2));
+        window.dispatchEvent(new Event('storage'));
+      });
+  };
+
+  const create = () => {
+    console.log('create!');
+    let url = '/create';
     axios.post(url, JSON.parse(code)).then((res) => console.log(res.data));
   };
 
   const formatCode = () => {
-    console.log('format code!');
     let stringed = '';
     let parsed;
     try {
       stringed = JSON.stringify(JSON.parse(code), null, 2).trim();
-      console.log(stringed);
       parsed = JSON.parse(stringed);
-      console.log(parsed);
       setCode(stringed);
 
       // need to change localstorage to be the newly formatted code
@@ -72,6 +140,8 @@ const EditorToolbar = ({
         className={classes.editorToolbar}
         lay={{ x: 'start', y: 'center', p: '0' }}
       >
+        <LedgerSelect ledger={ledger} setLedger={setLedger} />
+
         <EditorToolbarItem title="New" onClick={newTab}>
           <New sx={{ fontSize: '20px' }} />
         </EditorToolbarItem>
@@ -94,6 +164,10 @@ const EditorToolbar = ({
 
         <EditorToolbarItem title="Copy" onClick={() => todo('copy')}>
           <Copy sx={{ fontSize: '20px' }} />
+        </EditorToolbarItem>
+
+        <EditorToolbarItem title="Create Ledger" onClick={create}>
+          <Create sx={{ fontSize: '20px' }} />
         </EditorToolbarItem>
 
         <EditorToolbarItem title="Transact" onClick={transact}>

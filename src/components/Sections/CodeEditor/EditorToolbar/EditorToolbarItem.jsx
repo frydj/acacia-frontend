@@ -4,7 +4,7 @@ import { IconButton } from '@mui/material';
 
 const tooltipDelay = 250;
 
-const EditorToolbarItem = ({ title, offset, onClick, children }) => {
+const EditorToolbarItem = ({ title, offset = 0, onClick, children }) => {
   return (
     <Tooltip
       title={title}

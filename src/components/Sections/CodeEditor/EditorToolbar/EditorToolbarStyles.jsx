@@ -16,10 +16,7 @@ export const useStyles = makeStyles()((theme, { width }) => {
           backgroundColor: 'rgba(255,255,255,0.05)',
         },
       },
-      //   '& .MuiTouchRipple-root': {
-      //     borderRadius: 0,
-      //     '& .MuiTouchRipple-child': { borderRadius: 'inherit' },
-      //   },
+
       '&:after': {
         content: '""',
         display: 'block',
